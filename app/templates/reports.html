@@ -1,0 +1,154 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Attendance Reports</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+<div class="sidebar">
+
+    <h2>🎓 AttendEase</h2>
+
+    <p class="menu-title">MAIN MENU</p>
+
+    <a href="/">Dashboard</a>
+    <a href="{{ url_for('students.list_students') }}">Students</a>
+    <a href="{{ url_for('students.attendance') }}">Attendance</a>
+    <a href="/reports" class="active">Reports</a>
+
+</div>
+
+<div class="main-content">
+
+    <header>
+        <div>
+            <h1>Attendance Reports</h1>
+            <p>Monthly student attendance analysis</p>
+        </div>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="alert {{ category }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endwith %}
+
+    <section class="attendance-section">
+
+        <h2>Select Month</h2>
+
+        <form method="GET" action="/reports">
+
+            <input type="month"
+                   name="month"
+                   value="{{ selected_month }}"
+                   required>
+
+            <button type="submit">Generate Report</button>
+            <a href="{{ url_for('students.export_report') }}">
+    <button type="button">Download CSV Report</button>
+</a>
+
+        </form>
+
+    </section>
+
+    <section class="stats">
+
+        <div class="card">
+            <p>Total Attendance Records</p>
+            <h2>{{ total_classes }}</h2>
+        </div>
+
+        <div class="card present">
+            <p>Total Present</p>
+            <h2>{{ total_present }}</h2>
+        </div>
+
+        <div class="card absent">
+            <p>Total Absent</p>
+            <h2>{{ total_absent }}</h2>
+        </div>
+
+        <div class="card percentage">
+            <p>Overall Attendance</p>
+            <h2>{{ overall_percentage }}%</h2>
+        </div>
+
+    </section>
+
+    <section class="attendance-section">
+
+        <h2>Student-wise Attendance Report</h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Roll No.</th>
+                    <th>Student Name</th>
+                    <th>Total Classes</th>
+                    <th>Present</th>
+                    <th>Absent</th>
+                    <th>Percentage</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for student in student_reports %}
+
+                {% set total = student.total_classes %}
+                {% set present = student.present or 0 %}
+                {% set percentage = (present / total * 100) if total else 0 %}
+
+                <tr>
+
+                    <td>{{ student.roll_no }}</td>
+                    <td>{{ student.name }}</td>
+                    <td>{{ total }}</td>
+                    <td>{{ present }}</td>
+                    <td>{{ student.absent or 0 }}</td>
+                    <td>{{ "%.2f"|format(percentage) }}%</td>
+
+                    <td>
+                        {% if total == 0 %}
+                            <span class="badge">No Records</span>
+                        {% elif percentage < 75 %}
+                            <span class="badge absent-badge">Low Attendance</span>
+                        {% else %}
+                            <span class="badge present-badge">Good</span>
+                        {% endif %}
+                    </td>
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+                    <td colspan="7">No students registered.</td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </section>
+
+</div>
+
+</body>
+</html>

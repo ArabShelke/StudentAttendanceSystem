@@ -1,0 +1,61 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Student</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+<div class="main-content">
+
+    <section class="attendance-section">
+
+        <h1>Edit Student Details</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="alert {{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="POST" class="student-form">
+
+            <input type="text" name="roll_no"
+                   value="{{ student.roll_no }}" required>
+
+            <input type="text" name="name"
+                   value="{{ student.name }}" required>
+
+            <input type="email" name="email"
+                   value="{{ student.email or '' }}">
+
+            <input type="text" name="course"
+                   value="{{ student.course or '' }}">
+
+            <input type="number" name="semester"
+                   value="{{ student.semester or '' }}"
+                   min="1" max="12">
+
+            <button type="submit">Update Student</button>
+
+            <a href="{{ url_for('students.list_students') }}">
+                Cancel
+            </a>
+
+        </form>
+
+    </section>
+
+</div>
+
+</body>
+</html>

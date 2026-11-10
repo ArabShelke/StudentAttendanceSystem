@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Manage Students</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+<div class="sidebar">
+    <h2>🎓 AttendEase</h2>
+
+    <p class="menu-title">MAIN MENU</p>
+
+    <a href="/">Dashboard</a>
+    <a href="/students" class="active">Students</a>
+    <a href="#">Attendance</a>
+    <a href="#">Reports</a>
+</div>
+
+<div class="main-content">
+
+    <header>
+        <div>
+            <h1>Student Management</h1>
+            <p>Add and manage student records</p>
+        </div>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="alert {{ category }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endwith %}
+
+    <section class="attendance-section">
+
+        <h2>Register New Student</h2>
+
+        <form action="/students/add" method="POST"
+              class="student-form">
+
+            <input type="text" name="roll_no"
+                   placeholder="Roll Number" required>
+
+            <input type="text" name="name"
+                   placeholder="Student Name" required>
+
+            <input type="email" name="email"
+                   placeholder="Email Address">
+
+            <input type="text" name="course"
+                   placeholder="Course">
+
+            <input type="number" name="semester"
+                   placeholder="Semester" min="1" max="12">
+
+            <button type="submit">Add Student</button>
+
+        </form>
+
+    </section>
+
+    <section class="attendance-section">
+
+        <h2>Registered Students</h2>
+
+        <p>Total Students: {{ students|length }}</p>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Roll No.</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Course</th>
+                    <th>Semester</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for student in students %}
+
+                <tr>
+                    <td>{{ student.id }}</td>
+                    <td>{{ student.roll_no }}</td>
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.email or '-' }}</td>
+                    <td>{{ student.course or '-' }}</td>
+                    <td>{{ student.semester or '-' }}</td>
+
+                    <td>
+                        <a href="{{ url_for('students.edit_student', student_id=student.id) }}">
+                            Edit
+                        </a>
+
+                        <form action="{{ url_for('students.delete_student', student_id=student.id) }}"
+                              method="POST"
+                              style="display:inline;"
+                              onsubmit="return confirm('Delete this student?');">
+
+                            <button type="submit" class="delete-btn">
+                                Delete
+                            </button>
+
+                        </form>
+                    </td>
+                </tr>
+
+                {% else %}
+
+                <tr>
+                    <td colspan="7">No students registered yet.</td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </section>
+
+</div>
+
+</body>
+</html>

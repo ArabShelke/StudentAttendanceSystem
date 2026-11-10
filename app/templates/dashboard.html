@@ -1,0 +1,114 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Attendance System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>🎓 AttendEase</h2>
+
+    <p class="menu-title">MAIN MENU</p>
+    <a href="/" class="active">Dashboard</a>
+    <a href="{{ url_for('students.list_students') }}">Students</a>
+    <a href="{{ url_for('students.attendance') }}">Attendance</a>
+    <a href="{{ url_for('students.reports') }}">Reports</a>
+
+    <p class="menu-title">SYSTEM</p>
+    <a href="#">Settings</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+</div>
+
+<div class="main-content">
+
+    <header>
+        <div>
+            <h1>Dashboard</h1>
+            <p>Welcome to Student Attendance Management System</p>
+        </div>
+        <div class="admin">Admin 👤</div>
+    </header>
+
+    <section class="stats">
+
+        <div class="card">
+            <p>Total Students</p>
+            <h2>{{ total_students }}</h2>
+            <span>Registered Students</span>
+        </div>
+
+        <div class="card present">
+            <p>Present Today</p>
+            <h2>{{ present }}</h2>
+            <span>Students Present</span>
+        </div>
+
+        <div class="card absent">
+            <p>Absent Today</p>
+            <h2>{{ absent }}</h2>
+            <span>Students Absent</span>
+        </div>
+
+        <div class="card percentage">
+            <p>Attendance Rate</p>
+            <h2>{{ percentage }}%</h2>
+            <span>Today's Attendance</span>
+        </div>
+
+    </section>
+
+    <section class="attendance-section">
+
+        <h2>Recent Attendance Records</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Roll No.</th>
+                    <th>Student Name</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            
+<tbody>
+
+    {% for record in recent_records %}
+
+    <tr>
+        <td>{{ record.roll_no }}</td>
+        <td>{{ record.name }}</td>
+        <td>{{ record.attendance_date }}</td>
+
+        <td>
+            {% if record.status == 'Present' %}
+                <span class="badge present-badge">Present</span>
+            {% else %}
+                <span class="badge absent-badge">Absent</span>
+            {% endif %}
+        </td>
+    </tr>
+
+    {% else %}
+
+    <tr>
+        <td colspan="4">No attendance records available.</td>
+    </tr>
+
+    {% endfor %}
+
+</tbody>
+
+        </table>
+
+    </section>
+
+</div>
+
+</body>
+</html>

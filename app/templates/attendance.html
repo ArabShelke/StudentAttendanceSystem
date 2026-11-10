@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Attendance Management</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+<div class="sidebar">
+    <h2>🎓 AttendEase</h2>
+
+    <p class="menu-title">MAIN MENU</p>
+
+    <a href="/">Dashboard</a>
+    <a href="{{ url_for('students.list_students') }}">Students</a>
+    <a href="/attendance" class="active">Attendance</a>
+    <a href="#">Reports</a>
+</div>
+
+<div class="main-content">
+
+    <header>
+        <div>
+            <h1>Attendance Management</h1>
+            <p>Mark and manage daily student attendance</p>
+        </div>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="alert {{ category }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endwith %}
+
+    <section class="attendance-section">
+
+        <h2>Select Attendance Date</h2>
+
+        <form method="GET" action="/attendance">
+
+            <input type="date"
+                   name="attendance_date"
+                   value="{{ selected_date }}"
+                   required>
+
+            <button type="submit">View Date</button>
+
+        </form>
+
+    </section>
+
+    <section class="stats">
+
+        <div class="card">
+            <p>Total Marked</p>
+            <h2>{{ total }}</h2>
+        </div>
+
+        <div class="card present">
+            <p>Present</p>
+            <h2>{{ present }}</h2>
+        </div>
+
+        <div class="card absent">
+            <p>Absent</p>
+            <h2>{{ absent }}</h2>
+        </div>
+
+        <div class="card percentage">
+            <p>Attendance Rate</p>
+            <h2>{{ percentage }}%</h2>
+        </div>
+
+    </section>
+
+    <section class="attendance-section">
+
+        <h2>Mark Student Attendance</h2>
+
+        <form method="POST" action="/attendance">
+
+            <input type="hidden"
+                   name="attendance_date"
+                   value="{{ selected_date }}">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Roll Number</th>
+                        <th>Student Name</th>
+                        <th>Attendance Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for student in students %}
+
+                    <tr>
+
+                        <td>{{ student.roll_no }}</td>
+
+                        <td>{{ student.name }}</td>
+
+                        <td>
+                            <select name="status_{{ student.id }}" required>
+
+                                <option value="Present"
+                                    {% if student.status == 'Present' %}
+                                        selected
+                                    {% endif %}>
+                                    Present
+                                </option>
+
+                                <option value="Absent"
+                                    {% if student.status == 'Absent' %}
+                                        selected
+                                    {% endif %}>
+                                    Absent
+                                </option>
+
+                            </select>
+                        </td>
+
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+                        <td colspan="3">
+                            No students registered. Add students first.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            {% if students %}
+                <button type="submit">
+                    Save Attendance
+                </button>
+            {% endif %}
+
+        </form>
+
+    </section>
+
+</div>
+
+</body>
+</html>
